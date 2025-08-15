@@ -91,3 +91,8 @@ func (a *Adapter) Save(order *domain.Order) error {
 
 	return res.Error
 }
+
+func (a *Adapter) UpdateStatus(orderID int64, status string) error {
+	res := a.db.Model(&Order{}).Where("id = ?", orderID).Update("status", status)
+	return res.Error
+}

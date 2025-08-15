@@ -20,6 +20,8 @@ func NewApplication(db ports.DBPort, payment ports.PaymentPort) *Application {
 func (a Application) PlaceOrder(order domain.Order) (domain.Order, error) {
 	err := a.db.Save(&order)
 	if err != nil {
+		order.Status = "cancelled"
+		_ = a.db.UpdateStatus(order.ID, order.Status)
 		return domain.Order{}, err
 	}
 
@@ -27,6 +29,8 @@ func (a Application) PlaceOrder(order domain.Order) (domain.Order, error) {
 	if paymentErr != nil {
 		return domain.Order{}, paymentErr
 	}
+	order.Status = "Paid"
+	_ = a.db.UpdateStatus(order.ID, order.Status)
 
 	return order, nil
 }

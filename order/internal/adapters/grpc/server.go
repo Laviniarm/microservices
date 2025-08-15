@@ -3,6 +3,8 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"log"
 	"net"
 
@@ -25,6 +27,17 @@ func NewAdapter(api ports.APIPort, port int) *Adapter {
 }
 
 func (a *Adapter) Create(ctx context.Context, request *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
+	var totalItems int32 = 0
+	for _, orderItem := range request.OrderItems {
+		totalItems += orderItem.Quantity
+	}
+	
+	if totalItems > 50 {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			"pedido não pode ser realizado: quantidade total de itens (%d) excede o limite de 50", totalItems,
+		)
+	}
 	var orderItems []domain.OrderItem
 	for _, orderItem := range request.OrderItems {
 		orderItems = append(orderItems, domain.OrderItem{

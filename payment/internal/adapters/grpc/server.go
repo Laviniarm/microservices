@@ -5,9 +5,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/huseyinbabal/microservices/payment/config"
-	"github.com/huseyinbabal/microservices/payment/internal/ports"
-	"github.com/ruandg/microservices-proto/golang/payment"
+	"github.com/Laviniarm/microservices-proto/golang/payment"
+	"github.com/Laviniarm/microservices/payment/config"
+	"github.com/Laviniarm/microservices/payment/internal/ports"
 	"google.golang.org/grpc/reflection"
 
 	"google.golang.org/grpc"
