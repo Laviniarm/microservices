@@ -23,6 +23,9 @@ require (
 
 replace github.com/Laviniarm/microservices-proto/golang/order => ../../microservices-proto/golang/order
 
-require github.com/Laviniarm/microservices-proto/golang/payment v0.0.0-20250808002435-d177a174976e
+require (
+	github.com/Laviniarm/microservices-proto/golang/payment v0.0.0-20250808002435-d177a174976e
+	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
+)
 
 replace github.com/Laviniarm/microservices-proto/golang/payment => ../../microservices-proto/golang/payment
