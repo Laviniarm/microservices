@@ -66,14 +66,6 @@ func (l customLogger) Format(entry *log.Entry) ([]byte, error) {
 }
 
 func main() {
-	/*tp, err := tracerProvider("http://jaeger-otel.jaeger.svc.cluster.local:14278/api/traces")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}))
-	*/
 	dbAdapter, err := db.NewAdapter(config.GetDataSourceURL())
 	if err != nil {
 		log.Fatalf("Failed to connect to database. Error: %v", err)

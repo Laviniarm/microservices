@@ -2,7 +2,7 @@ module github.com/Laviniarm/microservices/payment
 
 go 1.24.5
 
-require github.com/Laviniarm/microservices-proto/golang/payment v0.0.0-20250808002435-d177a174976e
+require github.com/Laviniarm/microservices-proto/golang/payment v0.0.0-20250823012456-b25406c38caa
 
 require (
 	github.com/sirupsen/logrus v1.9.0
@@ -33,5 +33,3 @@ require (
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.36.7 // indirect
 )
-
-replace github.com/Laviniarm/microservices-proto/golang/payment => ../../microservices-proto/golang/payment

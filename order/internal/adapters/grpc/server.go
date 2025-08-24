@@ -16,11 +16,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// --- Novas portas (interfaces) esperadas ---
-// Ajuste os imports se você já tiver clients concretos prontos em packages próprios.
-//
-// PaymentClient deve encapsular a chamada gRPC para o microsserviço Payment.
-// Retorna approved=true/false e um erro (erro de infra, timeout, etc).
 type PaymentClient interface {
 	Process(ctx context.Context, req struct {
 		OrderID    int64
@@ -31,8 +26,6 @@ type PaymentClient interface {
 	}) (approved bool, err error)
 }
 
-// ShippingClient deve encapsular a chamada gRPC para o microsserviço Shipping.
-// Retorna o número de dias estimados para entrega.
 type ShippingClient interface {
 	Estimate(ctx context.Context, orderID int64, items []struct {
 		ID  string
@@ -40,11 +33,6 @@ type ShippingClient interface {
 	}) (estimatedDays int32, err error)
 }
 
-// Adapter agora recebe as novas dependências:
-// - api: sua aplicação (PlaceOrder persiste a ordem)
-// - inventory: repositório para validar SKUs (existência em DB)
-// - payment: client gRPC do Payment
-// - shipping: client gRPC do Shipping
 type Adapter struct {
 	api       ports.APIPort
 	inventory ports.InventoryRepository
@@ -55,7 +43,6 @@ type Adapter struct {
 	pb.UnimplementedOrderServer
 }
 
-// NewAdapter atualizado para injetar as dependências.
 func NewAdapter(
 	api ports.APIPort,
 	inventory ports.InventoryRepository,
@@ -162,17 +149,7 @@ func (a *Adapter) Create(ctx context.Context, request *pb.CreateOrderRequest) (*
 		OrderId: int32(result.ID),
 	}
 
-	// Se você adicionou o campo no seu order.proto:
-	//   message CreateOrderResponse {
-	//     int32 order_id = 1;
-	//     int32 estimated_delivery_days = 2;
-	//   }
-	// então descomente a linha abaixo:
-	//
-	// resp.EstimatedDeliveryDays = estimatedDays
-
-	// Se o campo ainda não existe no proto, você pode só logar o valor por ora:
-	_ = estimatedDays // remover quando adicionar ao proto
+	_ = estimatedDays
 
 	return resp, nil
 }

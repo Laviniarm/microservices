@@ -1,0 +1,78 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: orders
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./infra/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -proot || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  payment:
+    build:
+      context: .
+      dockerfile: ./payment/Dockerfile
+    environment:
+      PAYMENT_ADDR: ":50052"
+      DATA_SOURCE_URL: "root:root@tcp(mysql:3306)/payment?parseTime=true"
+      APPLICATION_PORT: "50052"
+      ENV: "development"
+    ports:
+      - "50052:50052"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "grpcurl", "-plaintext", "localhost:50052", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  shipping:
+    build:
+      context: .
+      dockerfile: ./shipping/Dockerfile
+    environment:
+      SHIPPING_ADDR: ":50053"
+      ENV: "development"
+    ports:
+      - "50053:50053"
+    depends_on:
+      mysql:
+        condition: service_healthy
+#    healthcheck:
+#      test: ["CMD", "grpcurl", "-plaintext", "localhost:50053", "list"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  order:
+    build:
+      context: .
+      dockerfile: ./order/Dockerfile
+    environment:
+      ORDER_ADDR: ":50051"
+      ENV: "development"
+      DATA_SOURCE_URL: "root:root@tcp(mysql:3306)/orders?parseTime=true"
+      PAYMENT_SERVICE_URL: "payment:50052"
+      SHIPPING_ADDR: "shipping:50053"
+    ports:
+      - "50051:50051"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      payment:
+        condition: service_started
+      shipping:
+        condition: service_started
+
+volumes:
+  mysql_data:
+

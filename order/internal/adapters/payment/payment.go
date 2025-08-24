@@ -19,14 +19,14 @@ type Adapter struct {
 }
 
 func NewAdapter(paymentServiceURL string) (*Adapter, error) {
-	// 🔄 Configuração do retry automático
+	// Configuração do retry automático
 	var opts []grpc.DialOption
 
 	opts = append(opts,
 		grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor(
 			grpc_retry.WithCodes(codes.Unavailable, codes.ResourceExhausted), // apenas nesses casos
-			grpc_retry.WithMax(5),                                            // até 5 tentativas
-			grpc_retry.WithBackoff(grpc_retry.BackoffLinear(1*time.Second)),  // espera linear entre tentativas
+			grpc_retry.WithMax(5), // até 5 tentativas
+			grpc_retry.WithBackoff(grpc_retry.BackoffLinear(1*time.Second)), // espera linear entre tentativas
 		)),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)

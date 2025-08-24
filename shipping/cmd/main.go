@@ -1,7 +1,6 @@
-package cmd
+package main
 
 import (
-	"github.com/Laviniarm/microservices/shipping/internal/application/core/api"
 	"log"
 	"net"
 	"os"
@@ -11,7 +10,7 @@ import (
 
 	shippingpb "github.com/Laviniarm/microservices-proto/golang/shipping"
 	g "github.com/Laviniarm/microservices/shipping/internal/adapters/grpc"
-	_ "github.com/Laviniarm/microservices/shipping/internal/application/core/api"
+	"github.com/Laviniarm/microservices/shipping/internal/application/core/api"
 )
 
 func main() {
@@ -25,6 +24,7 @@ func main() {
 	app := api.New()
 	s := grpc.NewServer()
 	shippingpb.RegisterShippingServer(s, g.NewServer(app))
+
 	// habilita reflection pra facilitar o grpcurl em dev
 	if os.Getenv("ENV") == "development" {
 		reflection.Register(s)
